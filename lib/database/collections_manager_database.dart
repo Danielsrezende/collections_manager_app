@@ -1,17 +1,21 @@
 import 'dart:async';
 import 'package:collections_manager_app/database/migrations/collections_table.dart';
+import 'package:collections_manager_app/database/migrations/editions_table.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:logging/logging.dart';
 
-class CollectionsMangerDatabase {
-  static final CollectionsMangerDatabase _instance =
-    CollectionsMangerDatabase._internal();
+class CollectionsManagerDatabase {
+  static final CollectionsManagerDatabase _instance =
+  CollectionsManagerDatabase._internal();
 
-  factory CollectionsMangerDatabase() => _instance;
+  factory CollectionsManagerDatabase() => _instance;
 
-  CollectionsMangerDatabase._internal();
+  CollectionsManagerDatabase._internal();
 
   Database? _db;
+
+  final Logger _logger = Logger('CollectionsManagerDatabase');
 
   Future<Database> get db async {
     if (_db != null) {
@@ -24,10 +28,11 @@ class CollectionsMangerDatabase {
 
   Future<bool> initialize() async {
     try {
+      _logger.info('Banco de dados iniciado com sucesso!');
       _db = await _initDb();
       return true;
     } catch (e) {
-      print('Erro ao inicializar o banco de dados: $e');
+      _logger.severe('Erro ao inicializar o banco de dados:', e);
       return false;
     }
   }
@@ -46,5 +51,6 @@ class CollectionsMangerDatabase {
 
   Future<void> _createTables(Database db) async {
     await createCollectionsTable(db);
+    await createEditionsTable(db);
   }
 }
